@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
+  <title>HONOR TV IPTV Menu</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      overflow: hidden;
+      background: #444;
+      font-family: 'Segoe UI', sans-serif;
+      color: white;
+      touch-action: manipulation;
+    }
+
+    .overlay {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      box-sizing: border-box;
+      padding: 4px 6px;
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 4px;
+    }
+
+    .logo img {
+      width: 50px;
+      border-radius: 50%;
+      box-shadow: 0 0 4px rgba(255, 255, 255, 0.3);
+    }
+
+    h2 {
+      font-size: 0.9em;
+      margin: 3px 0;
+    }
+
+    .menu-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 6px;
+      justify-items: center;
+      align-items: center;
+      overflow-y: auto;
+      padding: 4px;
+    }
+
+    .channel {
+      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+      border-radius: 50%;
+      padding: 4px;
+      width: 52px;
+      height: 52px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.3s;
+      outline: none;
+    }
+
+    .channel:focus,
+    .channel:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 6px rgba(255, 255, 255, 0.4);
+    }
+
+    .channel img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .channel span {
+      display: block;
+      font-size: 0.6em;
+      color: #fff;
+      margin-top: 4px;
+      text-align: center;
+      line-height: 1.1;
+      max-width: 60px;
+      word-wrap: break-word;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 0.6em;
+      color: #ccc;
+      margin-top: 3px;
+    }
+
+    #rotate-warning {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #000;
+      color: white;
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+      font-size: 1.2em;
+    }
+
+    @media screen and (orientation: portrait) {
+      #rotate-warning {
+        display: flex;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 1-day reload cache -->
+  <script>
+    const ONE_DAY = 24 * 60 * 60 * 1000; // 1 day in milliseconds
+    const lastVisit = localStorage.getItem('lastVisit');
+    const now = Date.now();
+    if (!lastVisit || now - parseInt(lastVisit) > ONE_DAY) {
+      localStorage.setItem('lastVisit', now.toString());
+      location.reload(true);
+    }
+  </script>
+
+  <div id="rotate-warning">Please rotate your device to landscape mode.</div>
+
+  <div class="overlay">
+    <div class="logo">
+      <img src="https://i.imgur.com/9jkWhU0.jpeg" alt="Honor TV Logo" />
+      <h2>HONOR TV MENU</h2>
+    </div>
+
+    <div class="menu-grid">
+      <div class="channel" tabindex="0" onclick="openChannel('livetv')">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT2TQS842esSWjINmAex8CKS6VRRGLn9KrFNrzBVYzntuYst5MVUID3ebw&s=10" alt="Live TV">
+        <span>Live TV</span>
+      </div>
+      <div class="channel" tabindex="0" onclick="openChannel('freemovies')">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRoW5andsUfhsNRoe9EikZzNiQU-bjIV__dPkd-INyvtJLnKy4Anjd9xGk&s=10" alt="Movies">
+        <span>Movies</span>
+      </div>
+      <div class="channel" tabindex="0" onclick="openChannel('hmtdflix')">
+        <img src="https://i.imgur.com/Q5mztTr.jpeg" alt="HMTDFLIX">
+        <span>Tagalog Dubbed</span>
+      </div>
+      <div class="channel" tabindex="0" onclick="openChannel('phmovies')">
+        <img src="https://i.imgur.com/8mcTlbL.png" alt="PH Movies">
+        <span>PH Movies</span>
+      </div>
+      <div class="channel" tabindex="0" onclick="openChannel('mmk')">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQvG44tA6CRZYloIVJkWSuGW8aLs6iTrdb1a7ynQ3GI3amg3QCP1_OwXcr3&s=10" alt="MMK">
+        <span>MMK</span>
+      </div>
+      <div class="channel" tabindex="0" onclick="openChannel('anime')">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRl-hI0ht2gB_pMQzkqdD6O1QZMdB6FDgwqt2dDhuOmU1Hrn43ZaHM6-fs&s=10" alt="Anime">
+        <span>Anime</span>
+      </div>
+      <div class="channel" tabindex="0" onclick="openChannel('phchannel')">
+        <img src="https://i.imgur.com/hm8EUBt.jpeg" alt="PH Channels">
+        <span>PH Channels</span>
+      </div>
+      <div class="channel" tabindex="0" onclick="openChannel('astro')">
+        <img src="https://images.seeklogo.com/logo-png/40/2/astro-2012-logo-png_seeklogo-400104.png" alt="ASTRO">
+        <span>Astro</span>
+      </div>
+      <div class="channel" tabindex="0" onclick="openChannel('phlive')">
+        <img src="https://pilipinaslive.com/assets/images/logo/pilipinaslive-logo-wbg.png" alt="PILIPINAS LIVE">
+        <span>Pilipinas Live</span>
+      </div>
+      <div class="channel" tabindex="0" onclick="openChannel('uschannel')">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRev-3BGRpuevDqdaxtL0gvjGE-8uAhuZxumzepZeCbYQm00m1rlDKvk0oX&s=10" alt="US CHANNEL">
+        <span>US CHANNEL</span>
+      </div>
+      <div class="channel" tabindex="0" onclick="openChannel('premsports')">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTg6pAEFTb_eZX57wSUsuivbvUgXrJA_owLryqUjwjIdWJu9_1bu2wHoz4&s=10" alt="PREMIUM SPORTS">
+        <span>Premium Sports</span>
+      </div>
+      <div class="channel" tabindex="0" onclick="openChannel('skychannel')">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQdGyKHSOja9RGWZP1E32moBC3Vrsb8GXCeBA&s" alt="SKY CHANNEL">
+        <span>Sky Channel</span>
+      </div>
+      <div class="channel" tabindex="0" onclick="openChannel('sportevent')">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR57h5eYZ2lXqtUQAW6dpBgB6Q3D1r8eie7SkjEstX79j8IRIVRnkwVpOQ&s=10" alt="SPORTS EVENT">
+        <span>Sports Event</span>
+      </div>
+      <div class="channel" tabindex="0" onclick="openChannel('plextv')">
+        <img src="https://iconlogovector.com/uploads/images/2024/03/lg-65e4e7b1e7202-Plex.webp" alt="PLEX TV">
+        <span>PLEX TV</span>
+      </div>
+      <div class="channel" tabindex="0" onclick="openChannel('distrotv')">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnK8hoFbN_MwvKRFPMJwF2L8gcLvbZqrc3iTFfLuPLEr-73E9lzLiUyPc&s=10" alt="DISTRO TV">
+        <span>DISTRO TV</span>
+      </div>
+      <div class="channel" tabindex="0" onclick="openChannel('dkt')">
+        <img src="https://i.imgur.com/daxi6sF.jpeg" alt="dkt">
+        <span>Drama Kwento Tagalog</span>
+      </div>
+    </div>
+
+    <div class="footer">Welcome to: HONOR TV MENU - Enjoy Watching</div>
+  </div>
+
+  <script>
+    function openChannel(channelId) {
+      window.location.href = "go:" + channelId;
+    }
+
+    function lockAutoLandscape() {
+      const tryLock = () => {
+        if (screen.orientation && screen.orientation.lock) {
+          screen.orientation.lock('landscape').catch(err => {
+            console.warn("Orientation lock not supported:", err);
+          });
+        }
+      };
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().then(tryLock).catch(tryLock);
+      } else {
+        tryLock();
+      }
+    }
+
+    function handleOrientationWarning() {
+      const warning = document.getElementById('rotate-warning');
+      warning.style.display = (window.innerHeight > window.innerWidth) ? 'flex' : 'none';
+    }
+
+    const channels = Array.from(document.querySelectorAll('.channel'));
+    window.onload = () => {
+      if (channels.length > 0) channels[0].focus();
+      lockAutoLandscape();
+      handleOrientationWarning();
+    };
+
+    document.addEventListener('keydown', (e) => {
+      const focused = document.activeElement;
+      const index = channels.indexOf(focused);
+      const columns = 6;
+
+      switch (e.key) {
+        case "ArrowRight":
+          if (index < channels.length - 1) channels[index + 1].focus();
+          break;
+        case "ArrowLeft":
+          if (index > 0) channels[index - 1].focus();
+          break;
+        case "ArrowDown":
+          if (index + columns < channels.length) channels[index + columns].focus();
+          break;
+        case "ArrowUp":
+          if (index - columns >= 0) channels[index - columns].focus();
+          break;
+        case "Enter":
+        case "OK":
+          if (focused) focused.click();
+          break;
+        case "Backspace":
+        case "Escape":
+          history.back();
+          break;
+      }
+    });
+
+    window.addEventListener('resize', handleOrientationWarning);
+    window.addEventListener('orientationchange', handleOrientationWarning);
+    window.addEventListener('click', lockAutoLandscape, { once: true });
+  </script>
+</body>
+</html>
