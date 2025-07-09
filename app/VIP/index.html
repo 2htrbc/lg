@@ -1,34 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register & Login</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
-    <script type="module" src="firebaseauth.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Registration Success</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #4facfe, #00f2fe);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: white;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .message-box {
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      padding: 30px 50px;
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      animation: popUp 0.7s ease-out;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 15px;
+      background: linear-gradient(90deg, #ffe53b, #ff2525);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    p {
+      font-size: 1.2rem;
+      color: #f0f0f0;
+    }
+
+    @keyframes popUp {
+      0% {
+        transform: scale(0.6);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+  </style>
 </head>
 <body>
-  <div class="container" id="signIn">
-        <h1 class="form-title">Sign In</h1>
-        <form method="post" action="">
-          <div id="signInMessage" class="messageDiv" style="display:none;"></div>
-
-          <div class="input-group">
-              <i class="fas fa-envelope"></i>
-              <input type="email"  id="email" placeholder="Email" required>
-              <label for="email">Email</label>
-          </div>
-          <div class="input-group">
-              <i class="fas fa-lock"></i>
-            <input type="password" id="password"  placeholder="Password" required>
-              <label for="password">Password</label>
-          </div>
-
-          </p>
-         <button  class="btn"  id="submitSignIn">Sign In</button>
-        </form>
-      </div>
-      <script src="script.js"></script>
+  <div class="message-box">
+    <h1>🎉 Congratulations! 🎉</h1>
+    <p>Your account was successfully registered.</p>
+  </div>
 </body>
 </html>
