@@ -122,7 +122,7 @@
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="container" id="loginContainer">
     <img src="https://i.imgur.com/C6CD0gF.jpeg" alt="Logo" class="logo" />
     <div class="form-title">Sign In</div>
     <div id="signInMessage" class="messageDiv"></div>
@@ -140,7 +140,6 @@
       <label for="password">Password</label>
     </div>
 
-    <!-- Automatically checked and hidden expiration -->
     <input type="checkbox" id="expire30" checked hidden />
 
     <button class="btn" id="submitSignIn">Sign In</button>
@@ -170,7 +169,7 @@
     const auth = getAuth();
     setPersistence(auth, browserLocalPersistence);
 
-    // Check for existing login and session expiration
+    // ✅ Automatically redirect if already signed in and session is valid
     onAuthStateChanged(auth, (user) => {
       if (user) {
         const savedTime = localStorage.getItem("loginTimestamp");
@@ -185,14 +184,16 @@
             signOut(auth);
             localStorage.clear();
           } else {
-            document.getElementById("daysLeftInfo").innerText = `✅ Your session will expire in ${daysLeft} day${daysLeft === 1 ? '' : 's'}.`;
+            document.getElementById("daysLeftInfo").innerText =
+              `✅ Your session will expire in ${daysLeft} day${daysLeft === 1 ? '' : 's'}.`;
+            document.getElementById("loginContainer").style.display = "none";
+            window.location.href = "homepage.html";
           }
         } else {
           document.getElementById("daysLeftInfo").innerText = "✅ Your session is active.";
+          document.getElementById("loginContainer").style.display = "none";
+          window.location.href = "homepage.html";
         }
-
-        // Optional: redirect only if homepage is required
-        // window.location.href = "homepage.html";
       }
     });
 
