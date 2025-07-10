@@ -3,10 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sign Up</title>
+  <title>TV Login</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
+    }
 
     body {
       background: #0e101c;
@@ -24,11 +29,18 @@
       border-radius: 12px;
       width: 100%;
       max-width: 400px;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+      text-align: center;
+    }
+
+    .logo {
+      display: block;
+      margin: 0 auto 20px;
+      max-width: 120px;
+      height: auto;
     }
 
     .form-title {
-      text-align: center;
       margin-bottom: 20px;
       font-size: 26px;
       color: #00d4ff;
@@ -37,6 +49,7 @@
     .input-group {
       position: relative;
       margin-bottom: 20px;
+      text-align: left;
     }
 
     .input-group i {
@@ -56,10 +69,12 @@
       color: #fff;
       font-size: 14px;
       outline: none;
+      transition: border 0.3s;
     }
 
     .input-group input:focus {
       border-color: #00d4ff;
+      outline: 2px solid #00d4ff;
     }
 
     .input-group label {
@@ -82,9 +97,12 @@
       font-weight: bold;
       font-size: 16px;
       cursor: pointer;
+      transition: background 0.3s;
+      margin-bottom: 10px;
     }
 
-    .btn:hover {
+    .btn:focus {
+      outline: 2px solid #fff;
       background: #00b8e6;
     }
 
@@ -98,64 +116,67 @@
       display: none;
     }
 
-    .expire-checkbox {
-      margin-bottom: 20px;
+    #daysLeftInfo {
+      text-align: center;
+      color: #00ff8c;
       font-size: 14px;
-    }
-
-    .expire-checkbox input {
-      margin-right: 6px;
+      margin-bottom: 15px;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="form-title">Sign Up</div>
-    <div id="message" class="messageDiv"></div>
-
-    <div class="input-group">
-      <i class="fas fa-user"></i>
-      <input type="text" id="name" placeholder="Full Name" required />
-      <label for="name">Full Name</label>
-    </div>
+  <div class="container" id="loginContainer">
+    <img src="https://i.imgur.com/C6CD0gF.jpeg" alt="Logo" class="logo" />
+    <div class="form-title">Sign In</div>
+    <div id="signInMessage" class="messageDiv"></div>
+    <div id="daysLeftInfo"></div>
 
     <div class="input-group">
       <i class="fas fa-envelope"></i>
-      <input type="email" id="email" placeholder="Email" required />
+      <input type="email" id="email" placeholder="Email" required tabindex="1" />
       <label for="email">Email</label>
     </div>
 
     <div class="input-group">
       <i class="fas fa-lock"></i>
-      <input type="password" id="password" placeholder="Password" required />
+      <input type="password" id="password" placeholder="Password" required tabindex="2" />
       <label for="password">Password</label>
     </div>
 
-    <div class="expire-checkbox">
-      <input type="checkbox" id="expire30" />
-      <label for="expire30">Expire login after 30 days</label>
-    </div>
+    <input type="checkbox" id="expire30" checked hidden />
 
-    <button class="btn" id="signUpBtn">Sign Up</button>
+    <button class="btn" id="submitSignIn" tabindex="3">Sign In</button>
+
+    <div style="margin-top: 25px;">
+      <h3 style="color: #00d4ff; margin-bottom: 10px;">Don't have access?</h3>
+
+      <form action="https://www.paypal.com/donate" method="post" target="_blank" style="margin-bottom: 10px;">
+        <input type="hidden" name="business" value="sumidomikeangelo24@gmail.com" />
+        <input type="hidden" name="no_recurring" value="0" />
+        <input type="hidden" name="item_name" value="30 Day App Access" />
+        <input type="hidden" name="amount" value="2.00" />
+        <input type="hidden" name="currency_code" value="USD" />
+        <button class="btn" style="background:#ffc439; color:#000;" type="submit" tabindex="4">
+          <i class="fab fa-paypal"></i> Pay $2 for 30 Days
+        </button>
+      </form>
+
+      <a href="https://www.facebook.com/share/1FGyxg3WNc/" target="_blank" class="btn" style="background:#1877f2; color:#fff;" tabindex="5">
+        <i class="fab fa-facebook"></i> Contact via Facebook
+      </a>
+    </div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
     import {
       getAuth,
-      createUserWithEmailAndPassword,
-      updateProfile,
+      signInWithEmailAndPassword,
+      onAuthStateChanged,
       setPersistence,
       browserLocalPersistence,
-      onAuthStateChanged,
       signOut
     } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
-
-    import {
-      getDatabase,
-      ref,
-      set
-    } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBcmyqSpFbg5mEW7y60dUZAXQ8nEf8QHis",
@@ -168,70 +189,54 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth();
-    const db = getDatabase(app);
-
-    // Ensure session persists
     setPersistence(auth, browserLocalPersistence);
 
-    // Enforce expiration on every page load
     onAuthStateChanged(auth, (user) => {
       if (user) {
         const savedTime = localStorage.getItem("loginTimestamp");
+        const now = new Date().getTime();
+        const thirtyDays = 30 * 24 * 60 * 60 * 1000;
+
         if (savedTime) {
-          const now = new Date().getTime();
-          const expireIn = 30 * 24 * 60 * 60 * 1000;
-          if (now - savedTime > expireIn) {
+          const elapsed = now - parseInt(savedTime, 10);
+          const daysLeft = Math.floor((thirtyDays - elapsed) / (1000 * 60 * 60 * 24));
+
+          if (elapsed > thirtyDays) {
             signOut(auth);
             localStorage.clear();
-            alert("Session expired. Please sign up again.");
-            return;
+          } else {
+            document.getElementById("daysLeftInfo").innerText =
+              `✅ Your session will expire in ${daysLeft} day${daysLeft === 1 ? '' : 's'}.`;
+            document.getElementById("loginContainer").style.display = "none";
+            window.location.href = "homepage.html";
           }
         } else {
-          // If no expiration is set, logout
-          signOut(auth);
-          localStorage.clear();
-          return;
+          document.getElementById("daysLeftInfo").innerText = "✅ Your session is active.";
+          document.getElementById("loginContainer").style.display = "none";
+          window.location.href = "homepage.html";
         }
-
-        window.location.href = "homepage.html";
       }
     });
 
-    function showMessage(msg) {
-      const div = document.getElementById("message");
-      div.textContent = msg;
-      div.style.display = "block";
-      div.style.opacity = 1;
-      setTimeout(() => { div.style.opacity = 0; }, 5000);
+    function showMessage(message, divId) {
+      const messageDiv = document.getElementById(divId);
+      messageDiv.innerHTML = message;
+      messageDiv.style.display = "block";
+      messageDiv.style.opacity = 1;
+      setTimeout(() => { messageDiv.style.opacity = 0; }, 5000);
     }
 
-    document.getElementById("signUpBtn").addEventListener("click", async (e) => {
+    document.getElementById("submitSignIn").addEventListener("click", async (e) => {
       e.preventDefault();
-      const name = document.getElementById("name").value.trim();
-      const email = document.getElementById("email").value.trim();
+      const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
       const expireChecked = document.getElementById("expire30").checked;
 
-      if (!name || !email || !password) {
-        showMessage("All fields are required.");
-        return;
-      }
-
       try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        // Save name to Firebase Auth profile
-        await updateProfile(user, {
-          displayName: name
-        });
-
-        // Save to Firebase Realtime DB
-        await set(ref(db, 'users/' + user.uid), {
-          name: name,
-          email: email,
-          createdAt: new Date().toISOString()
-        });
+        localStorage.setItem("loggedInUserId", user.uid);
 
         if (expireChecked) {
           const now = new Date().getTime();
@@ -240,13 +245,21 @@
           localStorage.removeItem("loginTimestamp");
         }
 
-        localStorage.setItem("loggedInUserId", user.uid);
-        showMessage("Account created!");
+        showMessage("Login successful!", "signInMessage");
         window.location.href = "homepage.html";
       } catch (error) {
-        showMessage("Error: " + error.message);
+        if (error.code === "auth/invalid-credential") {
+          showMessage("Incorrect Email or Password", "signInMessage");
+        } else {
+          showMessage("Login failed: " + error.message, "signInMessage");
+        }
       }
     });
+
+    // Auto-focus on first field for TV remote
+    window.onload = () => {
+      document.getElementById("email").focus();
+    };
   </script>
 </body>
 </html>
