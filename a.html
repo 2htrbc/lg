@@ -105,13 +105,11 @@
       display: none;
     }
 
-    .expire-checkbox {
-      margin-bottom: 20px;
+    #daysLeftInfo {
+      text-align: center;
+      color: #00ff8c;
       font-size: 14px;
-    }
-
-    .expire-checkbox input {
-      margin-right: 6px;
+      margin-bottom: 15px;
     }
   </style>
 </head>
@@ -119,6 +117,7 @@
   <div class="container">
     <div class="form-title">Sign In</div>
     <div id="signInMessage" class="messageDiv"></div>
+    <div id="daysLeftInfo"></div>
 
     <div class="input-group">
       <i class="fas fa-envelope"></i>
@@ -132,10 +131,8 @@
       <label for="password">Password</label>
     </div>
 
-    <div class="expire-checkbox">
-      <input type="checkbox" id="expire30" />
-      <label for="expire30">Expire login after 30 days</label>
-    </div>
+    <!-- Automatically checked and hidden expiration -->
+    <input type="checkbox" id="expire30" checked hidden />
 
     <button class="btn" id="submitSignIn">Sign In</button>
   </div>
@@ -162,25 +159,34 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth();
-
-    // Set session to persist across browser restarts
     setPersistence(auth, browserLocalPersistence);
 
-    // Auto login if user is authenticated and not expired
+    // Check for existing login and session expiration
     onAuthStateChanged(auth, (user) => {
       if (user) {
         const savedTime = localStorage.getItem("loginTimestamp");
+        const now = new Date().getTime();
+        const thirtyDays = 30 * 24 * 60 * 60 * 1000;
+
         if (savedTime) {
-          const now = new Date().getTime();
-          const thirtyDays = 30 * 24 * 60 * 60 * 1000;
-          if (now - savedTime > thirtyDays) {
+          const elapsed = now - parseInt(savedTime, 10);
+          const daysLeft = Math.floor((thirtyDays - elapsed) / (1000 * 60 * 60 * 24));
+
+          if (elapsed > thirtyDays) {
             signOut(auth);
-            localStorage.removeItem("loginTimestamp");
-            localStorage.removeItem("loggedInUserId");
-            return;
+            localStorage.clear();
+          } else {
+            // Show remaining days info
+            const daysLeftDiv = document.getElementById("daysLeftInfo");
+            daysLeftDiv.innerText = `✅ Your session will expire in ${daysLeft} day${daysLeft === 1 ? '' : 's'}.`;
           }
+        } else {
+          // No expiration saved; assume indefinite
+          document.getElementById("daysLeftInfo").innerText = "✅ Your session is active.";
         }
-        window.location.href = "homepage.html";
+
+        // Optional: redirect only if homepage is required immediately
+        // window.location.href = "homepage.html";
       }
     });
 
