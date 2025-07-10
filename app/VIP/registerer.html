@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="="en">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login & Signup</title>
+  <title>Sign Up Only</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <style>
     * {
@@ -105,14 +105,6 @@
       display: none;
     }
 
-    .toggle-link {
-      margin-top: 15px;
-      text-align: center;
-      font-size: 14px;
-      cursor: pointer;
-      color: #00d4ff;
-    }
-
     .expire-checkbox {
       margin-bottom: 20px;
       font-size: 14px;
@@ -125,10 +117,10 @@
 </head>
 <body>
   <div class="container">
-    <div class="form-title" id="formTitle">Sign In</div>
+    <div class="form-title">Sign Up</div>
     <div id="message" class="messageDiv"></div>
 
-    <div class="input-group" id="nameGroup" style="display: none;">
+    <div class="input-group">
       <i class="fas fa-user"></i>
       <input type="text" id="name" placeholder="Full Name" />
       <label for="name">Full Name</label>
@@ -151,15 +143,13 @@
       <label for="expire30">Expire login after 30 days</label>
     </div>
 
-    <button class="btn" id="submitBtn">Sign In</button>
-    <div class="toggle-link" id="toggleForm">Don't have an account? Sign Up</div>
+    <button class="btn" id="signUpBtn">Sign Up</button>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
     import {
       getAuth,
-      signInWithEmailAndPassword,
       createUserWithEmailAndPassword,
       onAuthStateChanged,
       setPersistence,
@@ -179,10 +169,10 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth();
 
-    // Set session persistence
+    // Persistent session
     setPersistence(auth, browserLocalPersistence);
 
-    // Auto login if already authenticated and not expired
+    // Redirect if already logged in and not expired
     onAuthStateChanged(auth, (user) => {
       if (user) {
         const savedTime = localStorage.getItem("loginTimestamp");
@@ -200,43 +190,21 @@
     });
 
     function showMessage(message) {
-      const messageDiv = document.getElementById("message");
-      messageDiv.innerHTML = message;
-      messageDiv.style.display = "block";
-      messageDiv.style.opacity = 1;
-      setTimeout(() => { messageDiv.style.opacity = 0; }, 5000);
+      const msg = document.getElementById("message");
+      msg.innerHTML = message;
+      msg.style.display = "block";
+      msg.style.opacity = 1;
+      setTimeout(() => { msg.style.opacity = 0; }, 5000);
     }
 
-    const formTitle = document.getElementById("formTitle");
-    const nameGroup = document.getElementById("nameGroup");
-    const toggleForm = document.getElementById("toggleForm");
-    const submitBtn = document.getElementById("submitBtn");
-    let isSignup = false;
-
-    toggleForm.addEventListener("click", () => {
-      isSignup = !isSignup;
-      formTitle.innerText = isSignup ? "Sign Up" : "Sign In";
-      submitBtn.innerText = isSignup ? "Sign Up" : "Sign In";
-      toggleForm.innerText = isSignup
-        ? "Already have an account? Sign In"
-        : "Don't have an account? Sign Up";
-      nameGroup.style.display = isSignup ? "block" : "none";
-    });
-
-    submitBtn.addEventListener("click", async (e) => {
+    document.getElementById("signUpBtn").addEventListener("click", async (e) => {
       e.preventDefault();
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
       const expireChecked = document.getElementById("expire30").checked;
 
       try {
-        let userCredential;
-        if (isSignup) {
-          userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        } else {
-          userCredential = await signInWithEmailAndPassword(auth, email, password);
-        }
-
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
         if (expireChecked) {
@@ -247,7 +215,7 @@
         }
 
         localStorage.setItem("loggedInUserId", user.uid);
-        showMessage(isSignup ? "Account created!" : "Login successful!");
+        showMessage("Account created successfully!");
         window.location.href = "homepage.html";
       } catch (error) {
         showMessage("Error: " + error.message);
