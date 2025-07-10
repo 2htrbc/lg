@@ -215,6 +215,11 @@
         return;
       }
 
+      if (!expireChecked) {
+        showMessage("You must agree to the 30-day expiration policy.");
+        return;
+      }
+
       try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
@@ -229,24 +234,12 @@
           createdAt: new Date().toISOString()
         });
 
-        if (expireChecked) {
-          const now = new Date().getTime();
-          localStorage.setItem("loginTimestamp", now);
-        } else {
-          localStorage.removeItem("loginTimestamp");
-        }
+        const now = new Date().getTime();
+        localStorage.setItem("loginTimestamp", now);
 
         localStorage.setItem("loggedInUserId", user.uid);
         showMessage("🎉 Registration Success!");
 
-        // Redirect after short delay
         setTimeout(() => {
           window.location.href = "homepage.html";
         }, 2500);
-      } catch (error) {
-        showMessage("Error: " + error.message);
-      }
-    });
-  </script>
-</body>
-</html>
