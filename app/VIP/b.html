@@ -96,7 +96,6 @@
       color: #fff;
       font-size: 14px;
       display: none;
-      text-align: center;
     }
 
     .expire-checkbox {
@@ -134,7 +133,7 @@
 
     <div class="expire-checkbox">
       <input type="checkbox" id="expire30" />
-      <label for="expire30">Expire login after 30 days</label>
+      <label for="expire30">Expire login after 30 days (Required)</label>
     </div>
 
     <button class="btn" id="signUpBtn">Sign Up</button>
@@ -171,8 +170,10 @@
     const auth = getAuth();
     const db = getDatabase(app);
 
+    // Ensure session persists
     setPersistence(auth, browserLocalPersistence);
 
+    // Enforce expiration on every page load
     onAuthStateChanged(auth, (user) => {
       if (user) {
         const savedTime = localStorage.getItem("loginTimestamp");
@@ -216,7 +217,7 @@
       }
 
       if (!expireChecked) {
-        showMessage("You must agree to the 30-day expiration policy.");
+        showMessage("You must check the 30-day expiration agreement to proceed.");
         return;
       }
 
@@ -236,10 +237,14 @@
 
         const now = new Date().getTime();
         localStorage.setItem("loginTimestamp", now);
-
         localStorage.setItem("loggedInUserId", user.uid);
-        showMessage("🎉 Registration Success!");
 
-        setTimeout(() => {
-          window.location.href = "homepage.html";
-        }, 2500);
+        showMessage("Account created!");
+        window.location.href = "homepage.html";
+      } catch (error) {
+        showMessage("Error: " + error.message);
+      }
+    });
+  </script>
+</body>
+</html>
