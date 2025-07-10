@@ -3,15 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sign Up Only</title>
+  <title>Sign Up</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Arial', sans-serif;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
 
     body {
       background: #0e101c;
@@ -29,7 +24,7 @@
       border-radius: 12px;
       width: 100%;
       max-width: 400px;
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.4);
     }
 
     .form-title {
@@ -61,7 +56,6 @@
       color: #fff;
       font-size: 14px;
       outline: none;
-      transition: border 0.3s;
     }
 
     .input-group input:focus {
@@ -88,7 +82,6 @@
       font-weight: bold;
       font-size: 16px;
       cursor: pointer;
-      transition: background 0.3s;
     }
 
     .btn:hover {
@@ -122,7 +115,7 @@
 
     <div class="input-group">
       <i class="fas fa-user"></i>
-      <input type="text" id="name" placeholder="Full Name" />
+      <input type="text" id="name" placeholder="Full Name" required />
       <label for="name">Full Name</label>
     </div>
 
@@ -151,11 +144,18 @@
     import {
       getAuth,
       createUserWithEmailAndPassword,
-      onAuthStateChanged,
+      updateProfile,
       setPersistence,
       browserLocalPersistence,
+      onAuthStateChanged,
       signOut
     } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+
+    import {
+      getDatabase,
+      ref,
+      set
+    } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBcmyqSpFbg5mEW7y60dUZAXQ8nEf8QHis",
@@ -168,44 +168,70 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth();
+    const db = getDatabase(app);
 
-    // Persistent session
+    // Ensure session persists
     setPersistence(auth, browserLocalPersistence);
 
-    // Redirect if already logged in and not expired
+    // Enforce expiration on every page load
     onAuthStateChanged(auth, (user) => {
       if (user) {
         const savedTime = localStorage.getItem("loginTimestamp");
         if (savedTime) {
           const now = new Date().getTime();
-          const thirtyDays = 30 * 24 * 60 * 60 * 1000;
-          if (now - savedTime > thirtyDays) {
+          const expireIn = 30 * 24 * 60 * 60 * 1000;
+          if (now - savedTime > expireIn) {
             signOut(auth);
             localStorage.clear();
+            alert("Session expired. Please sign up again.");
             return;
           }
+        } else {
+          // If no expiration is set, logout
+          signOut(auth);
+          localStorage.clear();
+          return;
         }
+
         window.location.href = "homepage.html";
       }
     });
 
-    function showMessage(message) {
-      const msg = document.getElementById("message");
-      msg.innerHTML = message;
-      msg.style.display = "block";
-      msg.style.opacity = 1;
-      setTimeout(() => { msg.style.opacity = 0; }, 5000);
+    function showMessage(msg) {
+      const div = document.getElementById("message");
+      div.textContent = msg;
+      div.style.display = "block";
+      div.style.opacity = 1;
+      setTimeout(() => { div.style.opacity = 0; }, 5000);
     }
 
     document.getElementById("signUpBtn").addEventListener("click", async (e) => {
       e.preventDefault();
-      const email = document.getElementById("email").value;
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value;
       const expireChecked = document.getElementById("expire30").checked;
+
+      if (!name || !email || !password) {
+        showMessage("All fields are required.");
+        return;
+      }
 
       try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
+
+        // Save name to Firebase Auth profile
+        await updateProfile(user, {
+          displayName: name
+        });
+
+        // Save to Firebase Realtime DB
+        await set(ref(db, 'users/' + user.uid), {
+          name: name,
+          email: email,
+          createdAt: new Date().toISOString()
+        });
 
         if (expireChecked) {
           const now = new Date().getTime();
@@ -215,7 +241,7 @@
         }
 
         localStorage.setItem("loggedInUserId", user.uid);
-        showMessage("Account created successfully!");
+        showMessage("Account created!");
         window.location.href = "homepage.html";
       } catch (error) {
         showMessage("Error: " + error.message);
