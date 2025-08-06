@@ -1,0 +1,15 @@
+{
+  "name": "iptv-restream-server",
+  "version": "1.0.0",
+  "description": "Node.js server to restream DASH (.mpd) and HLS (.m3u8) IPTV streams",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "request": "^2.88.2"
+  }
+}
