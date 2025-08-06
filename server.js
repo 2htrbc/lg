@@ -1,40 +1,28 @@
 const express = require('express');
-const { spawn } = require('child_process');
-const fs = require('fs');
+const request = require('request');
 const app = express();
-const PORT = 8080;
+const PORT = 3000;
 
-// Clean old streams
-if (!fs.existsSync('./hls')) fs.mkdirSync('./hls');
+// DASH base URL
+const DASH_BASE = 'https://cdn-uw2-prod.tsv2.amagi.tv/linear/amg01006-abs-cbn-abscbn-gma-x7-dash-abscbnono/7c693236-e0c1-40a3-8bd0-bb25e43f5bfc/';
 
-app.get('/stream.m3u8', (req, res) => {
-  const mpdUrl = 'https://cdn-uw2-prod.tsv2.amagi.tv/linear/amg01006-abs-cbn-abscbn-gma-x7-dash-abscbnono/7c693236-e0c1-40a3-8bd0-bb25e43f5bfc/index.mpd';
-
-  const ffmpeg = spawn('ffmpeg', [
-    '-i', mpdUrl,
-    '-c:v', 'copy',
-    '-c:a', 'aac',
-    '-f', 'hls',
-    '-hls_time', '5',
-    '-hls_list_size', '5',
-    '-hls_flags', 'delete_segments',
-    '-hls_allow_cache', '0',
-    './hls/stream.m3u8'
-  ]);
-
-  ffmpeg.stderr.on('data', data => {
-    console.log(`FFmpeg: ${data}`);
-  });
-
-  ffmpeg.on('close', code => {
-    console.log(`FFmpeg process exited with code ${code}`);
-  });
-
-  res.sendFile(__dirname + '/hls/stream.m3u8');
+// Proxy DASH content
+app.get('/dash/:file(*)', (req, res) => {
+  const filePath = req.params.file;
+  const targetUrl = DASH_BASE + filePath;
+  console.log(`Proxying: ${targetUrl}`);
+  req.pipe(request(targetUrl)).pipe(res);
 });
 
-app.use('/hls', express.static('./hls'));
+// Info route
+app.get('/', (req, res) => {
+  res.send(`
+    <h2>🎥 IPTV DASH Proxy is Running</h2>
+    <p>Use this MPD URL in your player:</p>
+    <code>https://${process.env.GITHUB_CODESPACES_PORT_3000_URL}dash/index.mpd</code>
+  `);
+});
 
 app.listen(PORT, () => {
-  console.log(`🎬 HLS restream available at http://localhost:${PORT}/stream.m3u8`);
+  console.log(`✅ Server running at http://localhost:${PORT}`);
 });
