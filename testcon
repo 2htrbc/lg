@@ -1,0 +1,8 @@
+#EXTM3U
+#KODIPROP:inputstreamaddon=inputstream.adaptive
+#KODIPROP:inputstream.adaptive.manifest_type=dash
+#KODIPROP:inputstream.adaptive.license_type=com.widevine.alpha
+#KODIPROP:inputstream.adaptive.license_key=https://license-server.com/getlicense|User-Agent=Mozilla/5.0&Referer=https://example.com|R{SSM}| 
+#KODIPROP:inputstream.adaptive.authinfo=IASHttpSessionId=OTT363373920251105071846041481;AuthInfo=XGxWp4Rw7aXUEvQJLNyLw8ZIUMNsSOoqTzDJu4X%2FHsnBTk02zRFcIFIMNDnTJrvYT0DrbppFNBpQkxyd9Hy67Q%3D%3D;usersessionid=180776581
+#EXTINF:-1 group-title="ZTE IPTV",CCTV-5
+http://161.49.17.2:6610/001/2/ch00000090990000001078/manifest.mpd?NeedJITP=1
